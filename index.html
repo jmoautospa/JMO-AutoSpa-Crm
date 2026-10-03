@@ -1,0 +1,810 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#890BF2" />
+<title>JMO AutoSpa CRM</title>
+<style>
+  :root{
+    --purple:#890BF2; --purple-dark:#6d09c4; --purple-soft:#f3e8ff;
+    --ink:#1a1a1a; --muted:#6b7280; --line:#e9e9ee; --bg:#f6f6f8; --card:#ffffff;
+    --green:#16a34a; --red:#dc2626; --amber:#d97706;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--ink);}
+  #app{max-width:480px; margin:0 auto; min-height:100dvh; background:var(--bg); display:flex; flex-direction:column;}
+  header.top{position:sticky; top:0; z-index:10; background:var(--purple); color:#fff; padding:14px 16px calc(10px + env(safe-area-inset-top, 0px)); padding-top:calc(14px + env(safe-area-inset-top, 0px));}
+  header.top h1{margin:0; font-size:20px; letter-spacing:.3px;}
+  header.top .sub{font-size:12px; opacity:.85;}
+  header.top .row{display:flex; align-items:center; justify-content:space-between;}
+  .logout{background:rgba(255,255,255,.18); color:#fff; border:1px solid rgba(255,255,255,.4); border-radius:999px; padding:6px 12px; font-size:13px;}
+  #view{flex:1; padding:14px 14px 90px;}
+  nav.tabs{position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:480px; background:#fff; border-top:1px solid var(--line); display:flex; padding-bottom:env(safe-area-inset-bottom, 0px); z-index:10;}
+  nav.tabs button{flex:1; background:none; border:0; padding:10px 4px 8px; font-size:11px; color:var(--muted); display:flex; flex-direction:column; align-items:center; gap:3px;}
+  nav.tabs button .ico{font-size:20px; line-height:1;}
+  nav.tabs button.active{color:var(--purple); font-weight:700;}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:12px; box-shadow:0 1px 2px rgba(0,0,0,.04);}
+  .card h3{margin:0 0 8px; font-size:16px;}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .stat{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px;}
+  .stat .label{font-size:12px; color:var(--muted); margin-bottom:4px;}
+  .stat .value{font-size:22px; font-weight:800;}
+  .stat .value.purple{color:var(--purple);} .stat .value.green{color:var(--green);} .stat .value.red{color:var(--red);}
+  .row-item{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 0; border-bottom:1px solid var(--line);}
+  .row-item:last-child{border-bottom:0;}
+  .row-item .t{font-weight:600;} .row-item .s{font-size:13px; color:var(--muted);}
+  .badge{display:inline-block; font-size:11px; font-weight:700; padding:3px 9px; border-radius:999px; background:var(--purple-soft); color:var(--purple);}
+  .badge.red{background:#fee2e2; color:var(--red);} .badge.green{background:#dcfce7; color:var(--green);}
+  .badge.amber{background:#fef3c7; color:var(--amber);} .badge.gray{background:#f1f1f4; color:var(--muted);}
+  .btn{display:inline-block; background:var(--purple); color:#fff; border:0; border-radius:12px; padding:12px 16px; font-size:15px; font-weight:700; width:100%; margin-top:10px;}
+  .btn:active{background:var(--purple-dark);}
+  .btn.secondary{background:#fff; color:var(--purple); border:1.5px solid var(--purple);}
+  .btn.danger{background:#fff; color:var(--red); border:1.5px solid var(--red);}
+  .btn.small{width:auto; padding:8px 12px; font-size:13px; margin-top:0;}
+  .btn-row{display:flex; gap:8px; margin-top:10px;} .btn-row .btn{margin-top:0;}
+  a.callbtn, a.textbtn{display:inline-block; text-decoration:none; text-align:center; border-radius:12px; padding:10px 0; font-weight:700; font-size:14px; flex:1;}
+  a.callbtn{background:var(--green); color:#fff;} a.textbtn{background:#0ea5e9; color:#fff;}
+  input, select, textarea{width:100%; border:1.5px solid var(--line); border-radius:12px; padding:12px; font-size:15px; margin-top:6px; background:#fff; color:var(--ink);}
+  label.f{display:block; font-size:13px; font-weight:600; color:var(--muted); margin-top:12px;}
+  .empty{text-align:center; color:var(--muted); padding:36px 16px; font-size:14px;}
+  .empty .big{font-size:40px; margin-bottom:8px;}
+  .back{background:none; border:0; color:#fff; font-size:15px; font-weight:600; padding:4px 0;}
+  .err{background:#fee2e2; color:#991b1b; border-radius:12px; padding:12px; font-size:14px; margin-bottom:12px;}
+  .okmsg{background:#dcfce7; color:#166534; border-radius:12px; padding:12px; font-size:14px; margin-bottom:12px;}
+  .login-wrap{max-width:480px; margin:0 auto; padding:60px 24px 24px; text-align:center;}
+  .login-wrap .logo{font-size:52px; margin-bottom:6px;}
+  .login-wrap h1{color:var(--purple); margin:0 0 4px;} .login-wrap p{color:var(--muted); font-size:14px;}
+  .login-card{background:#fff; border:1px solid var(--line); border-radius:16px; padding:20px; margin-top:20px; text-align:left;}
+  .tpl{background:var(--bg); border:1px dashed var(--line); border-radius:12px; padding:12px; font-size:13px; margin-top:10px; white-space:pre-wrap;}
+  .muted{color:var(--muted); font-size:13px;}
+  .section-title{font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:.6px; color:var(--muted); margin:18px 0 8px;}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="top" id="hdr" style="display:none">
+    <div class="row">
+      <div><h1 id="hdr-title">JMO AutoSpa CRM</h1><div class="sub" id="hdr-sub"></div></div>
+      <button class="logout" id="btn-logout">Log out</button>
+    </div>
+  </header>
+  <div id="view"></div>
+  <nav class="tabs" id="tabs" style="display:none"></nav>
+</div>
+<script>
+"use strict";
+/* ===== Config ===== */
+const SB_URL = "https://erygpzhraixwzgzacvyb.supabase.co";
+const SB_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVyeWdwemhyYWl4d3pnemFjdnliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3Nzc3OTcsImV4cCI6MjEwNjM1Mzc5N30.0o1ELCn-W0AtVy5bLycBu1Uvf5eycj7JjhslvOXdV6w";
+const TOKEN_KEY = "jmo_crm_token";
+const TZ = "America/New_York";
+const PURPLE = "#890BF2";
+
+let token = localStorage.getItem(TOKEN_KEY) || null;
+let view = { name: "boot" };
+let flash = null;
+
+/* ===== Helpers ===== */
+function esc(s){
+  if (s === null || s === undefined) return "";
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function money(n){
+  if (n === null || n === undefined || n === "") return "—";
+  const v = Number(n);
+  return isNaN(v) ? "—" : "$" + v.toFixed(2).replace(/\.00$/, "");
+}
+function fmtD(iso){
+  if (!iso) return "—";
+  try { return new Intl.DateTimeFormat("en-US",{timeZone:TZ,month:"short",day:"numeric",year:"numeric"}).format(new Date(iso)); }
+  catch(e){ return iso; }
+}
+function fmtDT(iso){
+  if (!iso) return "—";
+  try { return new Intl.DateTimeFormat("en-US",{timeZone:TZ,month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}).format(new Date(iso)); }
+  catch(e){ return iso; }
+}
+function fmtT(iso){
+  if (!iso) return "—";
+  try { return new Intl.DateTimeFormat("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"}).format(new Date(iso)); }
+  catch(e){ return iso; }
+}
+function isTodayET(iso){
+  if (!iso) return false;
+  const d = new Date(iso);
+  const day = new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"}).format(d);
+  const now = new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
+  return day === now;
+}
+function telHref(phone){ return "tel:" + String(phone||"").replace(/[^+\d]/g,""); }
+function smsHref(phone, body){ return "sms:" + String(phone||"").replace(/[^+\d]/g,"") + "?body=" + encodeURIComponent(body||""); }
+
+/* ===== Supabase REST ===== */
+function authHeaders(){
+  const h = { "apikey": SB_ANON, "Content-Type": "application/json" };
+  if (token) h["Authorization"] = "Bearer " + token;
+  return h;
+}
+async function sb(path, method, body){
+  method = method || "GET";
+  const headers = authHeaders();
+  if (body !== undefined && body !== null) headers["Prefer"] = "return=representation";
+  const res = await fetch(SB_URL + path, {
+    method: method,
+    headers: headers,
+    body: (body !== undefined && body !== null) ? JSON.stringify(body) : undefined
+  });
+  if (res.status === 401 || res.status === 403) { doLogout(); throw new Error("Session expired — please log in again."); }
+  if (!res.ok) {
+    let msg = "Request failed (" + res.status + ")";
+    try { const t = await res.text(); if (t) msg += ": " + t.slice(0,200); } catch(e){}
+    throw new Error(msg);
+  }
+  const txt = await res.text();
+  return txt ? JSON.parse(txt) : null;
+}
+async function apiLogin(email, password){
+  const res = await fetch(SB_URL + "/auth/v1/token?grant_type=password", {
+    method: "POST",
+    headers: { "apikey": SB_ANON, "Content-Type": "application/json" },
+    body: JSON.stringify({ email: email, password: password })
+  });
+  if (!res.ok) throw new Error("Login failed — check your email and password.");
+  const data = await res.json();
+  if (!data.access_token) throw new Error("Login failed — no session returned.");
+  token = data.access_token;
+  localStorage.setItem(TOKEN_KEY, token);
+}
+async function apiCheckSession(){
+  if (!token) return false;
+  try {
+    const res = await fetch(SB_URL + "/auth/v1/user", { headers: authHeaders() });
+    if (!res.ok) throw new Error("bad session");
+    return true;
+  } catch(e){ return false; }
+}
+function doLogout(){
+  token = null;
+  localStorage.removeItem(TOKEN_KEY);
+  view = { name: "login" };
+  render();
+}
+
+/* ===== Follow-up message templates ===== */
+const TPL = {
+  "24h": "Hey {name}! Just checking in — did you want to lock in that {package} for your {vehicle}? I've got openings this week if you want it. — JMO AutoSpa",
+  "3d":  "Hey {name}, still thinking about getting the {vehicle} detailed? Happy to answer any questions. — JMO AutoSpa",
+  "7d":  "Hey {name}, no worries if the timing isn't right — I'll be here when you're ready. I also do maintenance plans if you want to keep it clean year-round without thinking about it. — JMO AutoSpa"
+};
+function fillTpl(stage, info){
+  return (TPL[stage] || TPL["24h"])
+    .replace("{name}", info.name || "there")
+    .replace("{package}", info.package || "detail")
+    .replace("{vehicle}", info.vehicle || "vehicle");
+}
+
+/* ===== App shell ===== */
+const TABS = [
+  { id: "home", label: "Home", ico: "🏠" },
+  { id: "customers", label: "Customers", ico: "👥" },
+  { id: "jobs", label: "Jobs", ico: "🚗" },
+  { id: "quotes", label: "Quotes", ico: "💲" },
+  { id: "followups", label: "Follow-ups", ico: "⏰" }
+];
+function showTab(id){ view = { name: "tab", tab: id }; render(); }
+function go(v){ view = v; render(); }
+function back(){ view = { name: "tab", tab: "home" }; render(); }
+
+function renderTabs(){
+  const nav = document.getElementById("tabs");
+  const active = view.name === "tab" ? view.tab : "";
+  nav.innerHTML = TABS.map(t =>
+    '<button class="' + (t.id === active ? "active" : "") + '" data-tab="' + t.id + '">' +
+    '<span class="ico">' + t.ico + "</span>" + esc(t.label) + "</button>"
+  ).join("");
+  nav.querySelectorAll("button").forEach(b => b.addEventListener("click", () => showTab(b.dataset.tab)));
+}
+
+function render(){
+  const hdr = document.getElementById("hdr");
+  const tabs = document.getElementById("tabs");
+  const loggedIn = !!token && view.name !== "login";
+  hdr.style.display = loggedIn ? "" : "none";
+  tabs.style.display = (loggedIn && view.name === "tab") ? "" : "none";
+  if (loggedIn && view.name === "tab") renderTabs();
+  const v = document.getElementById("view");
+  let html = "";
+  if (flash){ html += '<div class="' + (flash.ok ? "okmsg" : "err") + '">' + esc(flash.msg) + "</div>"; flash = null; }
+  html += '<div id="content"></div>';
+  v.innerHTML = html;
+  const c = document.getElementById("content");
+  try {
+    if (view.name === "boot") { c.innerHTML = '<div class="empty"><div class="big">🧽</div>Loading…</div>'; boot(); return; }
+    if (view.name === "login") { renderLogin(c); return; }
+    if (view.name === "tab"){
+      document.getElementById("hdr-title").textContent = "JMO AutoSpa CRM";
+      document.getElementById("hdr-sub").textContent = TABS.find(t => t.id === view.tab).label;
+      if (view.tab === "home") renderHome(c);
+      else if (view.tab === "customers") renderCustomers(c);
+      else if (view.tab === "jobs") renderJobs(c);
+      else if (view.tab === "quotes") renderQuotes(c);
+      else if (view.tab === "followups") renderFollowups(c);
+      return;
+    }
+    if (view.name === "customer") { renderCustomerDetail(c, view.id); return; }
+    if (view.name === "job") { renderJobDetail(c, view.id); return; }
+    if (view.name === "quote") { renderQuoteDetail(c, view.id); return; }
+    if (view.name === "add-customer") { renderAddCustomer(c); return; }
+    if (view.name === "add-job") { renderAddJob(c); return; }
+    if (view.name === "add-quote") { renderAddQuote(c); return; }
+  } catch(e){ c.innerHTML = '<div class="err">' + esc(e.message) + "</div>"; }
+}
+function setFlash(msg, ok){ flash = { msg: msg, ok: ok !== false }; }
+function fail(e){ setFlash(e.message || "Something went wrong.", false); render(); }
+
+async function boot(){
+  const ok = await apiCheckSession();
+  view = ok ? { name: "tab", tab: "home" } : { name: "login" };
+  render();
+}
+document.getElementById("btn-logout").addEventListener("click", () => { doLogout(); });
+
+/* ===== Login ===== */
+function renderLogin(c){
+  c.innerHTML =
+    '<div class="login-wrap">' +
+      '<div class="logo">🧽</div><h1>JMO AutoSpa</h1><p>Owner CRM — sign in to continue</p>' +
+      '<div class="login-card"><div id="login-err"></div>' +
+      '<label class="f">Email</label><input id="li-email" type="email" autocomplete="username" placeholder="you@example.com" />' +
+      '<label class="f">Password</label><input id="li-pass" type="password" autocomplete="current-password" placeholder="••••••••" />' +
+      '<button class="btn" id="li-go">Log in</button>' +
+      "</div></div>";
+  const goBtn = document.getElementById("li-go");
+  async function attempt(){
+    const em = document.getElementById("li-email").value.trim();
+    const pw = document.getElementById("li-pass").value;
+    const errBox = document.getElementById("login-err");
+    errBox.innerHTML = "";
+    if (!em || !pw){ errBox.innerHTML = '<div class="err">Enter your email and password.</div>'; return; }
+    goBtn.textContent = "Logging in…"; goBtn.disabled = true;
+    try { await apiLogin(em, pw); view = { name: "tab", tab: "home" }; render(); }
+    catch(e){ errBox.innerHTML = '<div class="err">' + esc(e.message) + "</div>"; goBtn.textContent = "Log in"; goBtn.disabled = false; }
+  }
+  goBtn.addEventListener("click", attempt);
+  document.getElementById("li-pass").addEventListener("keydown", e => { if (e.key === "Enter") attempt(); });
+}
+
+/* ===== Shared loaders ===== */
+async function loadCustomers(orderBy){
+  return sb("/rest/v1/customers?select=*" + (orderBy || "&order=name.asc"));
+}
+async function loadCustomerMap(){
+  const cs = await loadCustomers();
+  const m = {}; cs.forEach(c => m[c.id] = c); return m;
+}
+
+/* ===== Home ===== */
+async function renderHome(c){
+  c.innerHTML = '<div class="empty"><div class="big">🧽</div>Loading dashboard…</div>';
+  try {
+    const [payments, jobs, followups] = await Promise.all([
+      sb("/rest/v1/payments?select=amount"),
+      sb("/rest/v1/jobs?select=id,price,paid,scheduled_at,title,customer_id&order=scheduled_at.asc"),
+      sb("/rest/v1/followups?select=*&sent=eq.false&order=due_at.asc")
+    ]);
+    const revenue = payments.reduce((s,p) => s + (Number(p.amount)||0), 0);
+    const unpaid = jobs.filter(j => !j.paid).reduce((s,j) => s + (Number(j.price)||0), 0);
+    const todayJobs = jobs.filter(j => j.scheduled_at && isTodayET(j.scheduled_at));
+    const now = new Date();
+    const overdue = followups.filter(f => new Date(f.due_at) <= now);
+    const custMap = await loadCustomerMap();
+    // resolve customer names for today's jobs
+    const nameOf = id => (custMap[id] && custMap[id].name) || "";
+    let html =
+      '<div class="grid2">' +
+        '<div class="stat"><div class="label">Total revenue</div><div class="value green">' + money(revenue) + "</div></div>" +
+        '<div class="stat"><div class="label">Unpaid jobs</div><div class="value red">' + money(unpaid) + "</div></div>" +
+        '<div class="stat"><div class="label">Jobs today</div><div class="value purple">' + todayJobs.length + "</div></div>" +
+        '<div class="stat"><div class="label">Follow-ups due</div><div class="value ' + (overdue.length ? "red" : "purple") + '">' + overdue.length + "</div></div>" +
+      "</div>" +
+      '<div class="section-title">Today\'s jobs</div>';
+    if (!todayJobs.length) html += '<div class="card"><div class="muted">No jobs scheduled today.</div></div>';
+    else html += '<div class="card">' + todayJobs.map(j =>
+      '<div class="row-item"><div><div class="t">' + esc(j.title || "Detail") + " — " + esc(nameOf(j.customer_id)) + '</div>' +
+      '<div class="s">' + fmtT(j.scheduled_at) + (j.price ? " · " + money(j.price) : "") + (j.paid ? ' · <span class="badge green">paid</span>' : ' · <span class="badge red">unpaid</span>') + "</div></div>" +
+      '<button class="btn small secondary" data-job="' + j.id + '">Open</button></div>'
+    ).join("") + "</div>";
+    html += '<div class="section-title">Follow-ups due</div>';
+    if (!overdue.length) html += '<div class="card"><div class="muted">Nothing due — you\'re all caught up. 🎉</div></div>';
+    else html += '<div class="card">' + overdue.slice(0,5).map(f =>
+      '<div class="row-item"><div><div class="t"><span class="badge ' + (f.stage === "7d" ? "amber" : "red") + '">' + esc(f.stage || f.kind) + "</span></div>" +
+      '<div class="s">Due ' + fmtDT(f.due_at) + "</div></div>" +
+      '<button class="btn small secondary" data-fu="1">Queue</button></div>'
+    ).join("") + "</div>";
+    c.innerHTML = html;
+    c.querySelectorAll("[data-job]").forEach(b => b.addEventListener("click", () => go({ name: "job", id: b.dataset.job })));
+    const q = c.querySelector("[data-fu]");
+    if (q) q.addEventListener("click", () => showTab("followups"));
+  } catch(e){ c.innerHTML = '<div class="err">' + esc(e.message) + "</div>"; }
+}
+
+/* ===== Customers ===== */
+async function renderCustomers(c){
+  c.innerHTML = '<div class="empty"><div class="big">👥</div>Loading customers…</div>';
+  try {
+    const cs = await loadCustomers();
+    let html =
+      '<input id="cust-search" placeholder="🔍 Search customers…" />' +
+      '<button class="btn" id="add-cust">+ Add customer</button>' +
+      '<div id="cust-list" style="margin-top:12px"></div>';
+    c.innerHTML = html;
+    const list = document.getElementById("cust-list");
+    function draw(filter){
+      const f = (filter||"").toLowerCase();
+      const rows = cs.filter(x => !f || (x.name||"").toLowerCase().includes(f) || (x.phone||"").includes(f));
+      if (!rows.length){ list.innerHTML = '<div class="empty"><div class="big">👥</div>No customers yet — add your first above.</div>'; return; }
+      list.innerHTML = '<div class="card">' + rows.map(x =>
+        '<div class="row-item"><div><div class="t">' + esc(x.name) + "</div>" +
+        '<div class="s">' + esc(x.phone || "") + (x.phone && x.email ? " · " : "") + esc(x.email || "") + "</div></div>" +
+        '<button class="btn small secondary" data-cid="' + x.id + '">Open</button></div>'
+      ).join("") + "</div>";
+      list.querySelectorAll("[data-cid]").forEach(b => b.addEventListener("click", () => go({ name: "customer", id: b.dataset.cid })));
+    }
+    draw("");
+    document.getElementById("cust-search").addEventListener("input", e => draw(e.target.value));
+    document.getElementById("add-cust").addEventListener("click", () => go({ name: "add-customer" }));
+  } catch(e){ c.innerHTML = '<div class="err">' + esc(e.message) + "</div>"; }
+}
+
+function renderAddCustomer(c){
+  c.innerHTML =
+    '<button class="back" id="bk" style="color:var(--purple);margin-bottom:8px">← Back</button>' +
+    '<div class="card"><h3>Add customer</h3>' +
+    '<label class="f">Name *</label><input id="nc-name" placeholder="Full name" />' +
+    '<label class="f">Phone</label><input id="nc-phone" type="tel" placeholder="(352) 555-0123" />' +
+    '<label class="f">Email</label><input id="nc-email" type="email" placeholder="name@email.com" />' +
+    '<label class="f">Notes</label><textarea id="nc-notes" rows="3" placeholder="Preferences, gate code, etc."></textarea>' +
+    '<button class="btn" id="nc-save">Save customer</button></div>';
+  document.getElementById("bk").addEventListener("click", () => showTab("customers"));
+  document.getElementById("nc-save").addEventListener("click", async () => {
+    const name = document.getElementById("nc-name").value.trim();
+    if (!name){ setFlash("Customer name is required.", false); render(); return; }
+    try {
+      const rows = await sb("/rest/v1/customers", "POST", {
+        name: name,
+        phone: document.getElementById("nc-phone").value.trim() || null,
+        email: document.getElementById("nc-email").value.trim() || null,
+        notes: document.getElementById("nc-notes").value.trim() || null
+      });
+      setFlash("Customer added.", true);
+      go({ name: "customer", id: rows[0].id });
+    } catch(e){ fail(e); }
+  });
+}
+
+async function renderCustomerDetail(c, id){
+  c.innerHTML = '<div class="empty"><div class="big">👤</div>Loading…</div>';
+  try {
+    const [custRows, vehicles, jobs, quotes] = await Promise.all([
+      sb("/rest/v1/customers?select=*&id=eq." + id),
+      sb("/rest/v1/vehicles?select=*&customer_id=eq." + id + "&order=created_at.desc"),
+      sb("/rest/v1/jobs?select=*&customer_id=eq." + id + "&order=scheduled_at.desc"),
+      sb("/rest/v1/quotes?select=*&customer_id=eq." + id + "&order=sent_at.desc")
+    ]);
+    const cust = custRows[0];
+    if (!cust){ c.innerHTML = '<div class="err">Customer not found.</div>'; return; }
+    const vehLabel = v => [v.year, v.make, v.model].filter(Boolean).join(" ") || "Vehicle";
+    let html =
+      '<button class="back" id="bk" style="color:var(--purple);margin-bottom:8px">← Customers</button>' +
+      '<div class="card"><h3>' + esc(cust.name) + "</h3>" +
+      '<div class="muted">' + esc(cust.phone || "No phone") + (cust.email ? "<br>" + esc(cust.email) : "") + "</div>" +
+      (cust.notes ? '<div style="margin-top:8px;font-size:14px">' + esc(cust.notes) + "</div>" : "");
+    if (cust.phone){
+      html += '<div class="btn-row"><a class="callbtn" href="' + telHref(cust.phone) + '">📞 Call</a>' +
+              '<a class="textbtn" href="' + smsHref(cust.phone, "Hey " + (cust.name||"there") + "! This is JMO AutoSpa.") + '">💬 Text</a></div>';
+    }
+    html += '<div class="btn-row"><button class="btn small danger" id="del-cust">Delete customer</button></div></div>';
+    html += '<div class="section-title">Vehicles (' + vehicles.length + ")</div>";
+    html += '<div class="card">';
+    if (!vehicles.length) html += '<div class="muted">No vehicles yet.</div>';
+    html += vehicles.map(v =>
+      '<div class="row-item"><div><div class="t">' + esc(vehLabel(v)) + "</div>" +
+      '<div class="s">' + esc([v.color, v.plate].filter(Boolean).join(" · ") || "") + (v.notes ? " · " + esc(v.notes) : "") + "</div></div>" +
+      '<button class="btn small danger" data-delveh="' + v.id + '">✕</button></div>'
+    ).join("") + "</div>";
+    html += '<div class="card"><h3>Add vehicle</h3>' +
+      '<div class="grid2"><div><label class="f">Year</label><input id="nv-year" type="number" placeholder="2022" /></div>' +
+      '<div><label class="f">Color</label><input id="nv-color" placeholder="Black" /></div></div>' +
+      '<label class="f">Make</label><input id="nv-make" placeholder="Honda" />' +
+      '<label class="f">Model</label><input id="nv-model" placeholder="Civic" />' +
+      '<label class="f">Plate</label><input id="nv-plate" placeholder="ABC 123" />' +
+      '<button class="btn" id="nv-save">Add vehicle</button></div>';
+    html += '<div class="section-title">Jobs (' + jobs.length + ")</div>";
+    html += '<div class="card">';
+    if (!jobs.length) html += '<div class="muted">No jobs yet.</div>';
+    html += jobs.map(j =>
+      '<div class="row-item"><div><div class="t">' + esc(j.title || "Detail") + '</div><div class="s">' + fmtDT(j.scheduled_at) +
+      (j.price ? " · " + money(j.price) : "") + " · " + esc(j.status || "") + (j.paid ? ' · <span class="badge green">paid</span>' : ' · <span class="badge red">unpaid</span>') + "</div></div>" +
+      '<button class="btn small secondary" data-job="' + j.id + '">Open</button></div>'
+    ).join("") + "</div>";
+    html += '<div class="section-title">Quotes (' + quotes.length + ")</div>";
+    html += '<div class="card">';
+    if (!quotes.length) html += '<div class="muted">No quotes yet.</div>';
+    html += quotes.map(q =>
+      '<div class="row-item"><div><div class="t">' + esc(q.package || "Quote") + " — " + money(q.amount) + '</div><div class="s">Sent ' + fmtD(q.sent_at) + " · " + esc(q.status || "") + "</div></div>" +
+      '<button class="btn small secondary" data-quote="' + q.id + '">Open</button></div>'
+    ).join("") + "</div>";
+    c.innerHTML = html;
+    document.getElementById("bk").addEventListener("click", () => showTab("customers"));
+    document.getElementById("del-cust").addEventListener("click", async () => {
+      if (!confirm("Delete " + cust.name + " and ALL their vehicles, jobs, quotes and payments?")) return;
+      try { await sb("/rest/v1/customers?id=eq." + id, "DELETE", {}); setFlash("Customer deleted.", true); showTab("customers"); }
+      catch(e){ fail(e); }
+    });
+    document.getElementById("nv-save").addEventListener("click", async () => {
+      const yr = document.getElementById("nv-year").value.trim();
+      try {
+        await sb("/rest/v1/vehicles", "POST", {
+          customer_id: id,
+          year: yr ? parseInt(yr, 10) : null,
+          make: document.getElementById("nv-make").value.trim() || null,
+          model: document.getElementById("nv-model").value.trim() || null,
+          color: document.getElementById("nv-color").value.trim() || null,
+          plate: document.getElementById("nv-plate").value.trim() || null
+        });
+        setFlash("Vehicle added.", true); go({ name: "customer", id: id });
+      } catch(e){ fail(e); }
+    });
+    c.querySelectorAll("[data-delveh]").forEach(b => b.addEventListener("click", async () => {
+      if (!confirm("Delete this vehicle?")) return;
+      try { await sb("/rest/v1/vehicles?id=eq." + b.dataset.delveh, "DELETE", {}); setFlash("Vehicle deleted.", true); go({ name: "customer", id: id }); }
+      catch(e){ fail(e); }
+    }));
+    c.querySelectorAll("[data-job]").forEach(b => b.addEventListener("click", () => go({ name: "job", id: b.dataset.job })));
+    c.querySelectorAll("[data-quote]").forEach(b => b.addEventListener("click", () => go({ name: "quote", id: b.dataset.quote })));
+  } catch(e){ c.innerHTML = '<div class="err">' + esc(e.message) + "</div>"; }
+}
+
+/* ===== Jobs ===== */
+let jobsFilter = "upcoming";
+async function renderJobs(c){
+  c.innerHTML = '<div class="empty"><div class="big">🚗</div>Loading jobs…</div>';
+  try {
+    const [jobs, custMap] = await Promise.all([
+      sb("/rest/v1/jobs?select=*&order=scheduled_at.desc"),
+      loadCustomerMap()
+    ]);
+    const now = new Date();
+    const rows = jobsFilter === "upcoming"
+      ? jobs.filter(j => j.scheduled_at && new Date(j.scheduled_at) >= now && (j.status === "scheduled" || j.status === "in_progress"))
+      : jobs;
+    let html =
+      '<div class="btn-row" style="margin-top:0">' +
+        '<button class="btn small ' + (jobsFilter === "upcoming" ? "" : "secondary") + '" id="jf-up">Upcoming</button>' +
+        '<button class="btn small ' + (jobsFilter === "all" ? "" : "secondary") + '" id="jf-all">All</button>' +
+      "</div>" +
+      '<button class="btn" id="add-job">+ Add job</button>';
+    if (!rows.length) html += '<div class="empty"><div class="big">🚗</div>' + (jobsFilter === "upcoming" ? "No upcoming jobs." : "No jobs yet — add your first above.") + "</div>";
+    else html += '<div class="card" style="margin-top:12px">' + rows.map(j => {
+      const nm = (custMap[j.customer_id] && custMap[j.customer_id].name) || "";
+      return '<div class="row-item"><div><div class="t">' + esc(j.title || "Detail") + " — " + esc(nm) + '</div>' +
+        '<div class="s">' + fmtDT(j.scheduled_at) + (j.price ? " · " + money(j.price) : "") + " · " + esc(j.status || "") +
+        (j.paid ? ' · <span class="badge green">paid</span>' : ' · <span class="badge red">unpaid</span>') + "</div></div>" +
+        '<button class="btn small secondary" data-job="' + j.id + '">Open</button></div>';
+    }).join("") + "</div>";
+    c.innerHTML = html;
+    document.getElementById("jf-up").addEventListener("click", () => { jobsFilter = "upcoming"; render(); });
+    document.getElementById("jf-all").addEventListener("click", () => { jobsFilter = "all"; render(); });
+    document.getElementById("add-job").addEventListener("click", () => go({ name: "add-job" }));
+    c.querySelectorAll("[data-job]").forEach(b => b.addEventListener("click", () => go({ name: "job", id: b.dataset.job })));
+  } catch(e){ c.innerHTML = '<div class="err">' + esc(e.message) + "</div>"; }
+}
+
+async function renderAddJob(c){
+  c.innerHTML = '<div class="empty"><div class="big">🚗</div>Loading…</div>';
+  try {
+    const [cs, vs] = await Promise.all([ loadCustomers(), sb("/rest/v1/vehicles?select=id,customer_id,year,make,model") ]);
+    const vehLabel = v => [v.year, v.make, v.model].filter(Boolean).join(" ");
+    c.innerHTML =
+      '<button class="back" id="bk" style="color:var(--purple);margin-bottom:8px">← Jobs</button>' +
+      '<div class="card"><h3>Add job</h3>' +
+      '<label class="f">Customer *</label><select id="nj-cust">' +
+        cs.map(x => '<option value="' + x.id + '">' + esc(x.name) + "</option>").join("") + "</select>" +
+      '<label class="f">Vehicle</label><select id="nj-veh"><option value="">— None —</option>' +
+        vs.map(v => '<option value="' + v.id + '" data-c="' + v.customer_id + '">' + esc(vehLabel(v)) + "</option>").join("") + "</select>" +
+      '<label class="f">Title / package</label><input id="nj-title" placeholder="Deluxe detail" />' +
+      '<label class="f">Scheduled</label><input id="nj-when" type="datetime-local" />' +
+      '<label class="f">Price</label><input id="nj-price" type="number" step="0.01" min="0" placeholder="185.00" />' +
+      '<label class="f">Status</label><select id="nj-status"><option>scheduled</option><option>in_progress</option><option>done</option><option>cancelled</option></select>' +
+      '<label class="f">Notes</label><textarea id="nj-notes" rows="2"></textarea>' +
+      '<button class="btn" id="nj-save">Save job</button></div>';
+    document.getElementById("bk").addEventListener("click", () => showTab("jobs"));
+    document.getElementById("nj-save").addEventListener("click", async () => {
+      const custId = document.getElementById("nj-cust").value;
+      if (!custId){ setFlash("Pick a customer first.", false); render(); return; }
+      const when = document.getElementById("nj-when").value;
+      const price = document.getElementById("nj-price").value.trim();
+      try {
+        const rows = await sb("/rest/v1/jobs", "POST", {
+          customer_id: custId,
+          vehicle_id: document.getElementById("nj-veh").value || null,
+          title: document.getElementById("nj-title").value.trim() || null,
+          scheduled_at: when ? new Date(when).toISOString() : null,
+          price: price ? Number(price) : null,
+          status: document.getElementById("nj-status").value,
+          notes: document.getElementById("nj-notes").value.trim() || null
+        });
+        setFlash("Job added.", true);
+        go({ name: "job", id: rows[0].id });
+      } catch(e){ fail(e); }
+    });
+  } catch(e){ c.innerHTML = '<div class="err">' + esc(e.message) + "</div>"; }
+}
+
+async function renderJobDetail(c, id){
+  c.innerHTML = '<div class="empty"><div class="big">🚗</div>Loading…</div>';
+  try {
+    const [jobRows, payRows, custMap] = await Promise.all([
+      sb("/rest/v1/jobs?select=*&id=eq." + id),
+      sb("/rest/v1/payments?select=*&job_id=eq." + id + "&order=paid_at.desc"),
+      loadCustomerMap()
+    ]);
+    const j = jobRows[0];
+    if (!j){ c.innerHTML = '<div class="err">Job not found.</div>'; return; }
+    const nm = (custMap[j.customer_id] && custMap[j.customer_id].name) || "";
+    const paidSum = payRows.reduce((s,p) => s + (Number(p.amount)||0), 0);
+    let html =
+      '<button class="back" id="bk" style="color:var(--purple);margin-bottom:8px">← Jobs</button>' +
+      '<div class="card"><h3>' + esc(j.title || "Detail") + "</h3>" +
+      '<div class="muted">Customer: <b>' + esc(nm) + "</b><br>" + fmtDT(j.scheduled_at) +
+      (j.price ? "<br>Price: <b>" + money(j.price) + "</b>" : "") +
+      "<br>Status: " + esc(j.status || "") + "</div>" +
+      (j.notes ? '<div style="margin-top:8px;font-size:14px">' + esc(j.notes) + "</div>" : "") +
+      '<div style="margin-top:10px">' + (j.paid ? '<span class="badge green">PAID</span>' : '<span class="badge red">UNPAID</span>') +
+      ' <span class="muted">Collected: ' + money(paidSum) + "</span></div>" +
+      '<div class="btn-row"><button class="btn small ' + (j.paid ? "secondary" : "") + '" id="toggle-paid">' + (j.paid ? "Mark unpaid" : "Mark paid") + "</button>" +
+      '<button class="btn small secondary" id="chg-status">Status: ' + esc(j.status || "scheduled") + "</button></div>" +
+      '<button class="btn small danger" id="del-job" style="margin-top:8px">Delete job</button></div>';
+    html += '<div class="section-title">Payments (' + payRows.length + ")</div>";
+    html += '<div class="card">';
+    if (!payRows.length) html += '<div class="muted">No payments recorded.</div>';
+    html += payRows.map(p =>
+      '<div class="row-item"><div><div class="t">' + money(p.amount) + " · " + esc(p.method || "—") + '</div>' +
+      '<div class="s">' + fmtDT(p.paid_at) + (p.notes ? " · " + esc(p.notes) : "") + "</div></div>" +
+      '<button class="btn small danger" data-delpay="' + p.id + '">✕</button></div>'
+    ).join("") + "</div>";
+    html += '<div class="card"><h3>Record payment</h3>' +
+      '<label class="f">Amount *</label><input id="np-amt" type="number" step="0.01" min="0" placeholder="185.00" />' +
+      '<label class="f">Method</label><select id="np-method"><option>cash</option><option>card</option><option>other</option></select>' +
+      '<label class="f">Note</label><input id="np-note" placeholder="Deposit, balance, tip…" />' +
+      '<button class="btn" id="np-save">Add payment</button></div>';
+    c.innerHTML = html;
+    document.getElementById("bk").addEventListener("click", () => showTab("jobs"));
+    document.getElementById("toggle-paid").addEventListener("click", async () => {
+      try { await sb("/rest/v1/jobs?id=eq." + id, "PATCH", { paid: !j.paid }); setFlash(j.paid ? "Marked unpaid." : "Marked paid. 🎉", true); go({ name: "job", id: id }); }
+      catch(e){ fail(e); }
+    });
+    document.getElementById("chg-status").addEventListener("click", async () => {
+      const order = ["scheduled", "in_progress", "done", "cancelled"];
+      const next = order[(order.indexOf(j.status) + 1) % order.length];
+      try { await sb("/rest/v1/jobs?id=eq." + id, "PATCH", { status: next }); go({ name: "job", id: id }); }
+      catch(e){ fail(e); }
+    });
+    document.getElementById("del-job").addEventListener("click", async () => {
+      if (!confirm("Delete this job and its payments?")) return;
+      try { await sb("/rest/v1/jobs?id=eq." + id, "DELETE", {}); setFlash("Job deleted.", true); showTab("jobs"); }
+      catch(e){ fail(e); }
+    });
+    document.getElementById("np-save").addEventListener("click", async () => {
+      const amt = document.getElementById("np-amt").value.trim();
+      if (!amt || Number(amt) <= 0){ setFlash("Enter a payment amount.", false); render(); return; }
+      try {
+        await sb("/rest/v1/payments", "POST", {
+          job_id: id, amount: Number(amt),
+          method: document.getElementById("np-method").value,
+          notes: document.getElementById("np-note").value.trim() || null
+        });
+        setFlash("Payment recorded.", true); go({ name: "job", id: id });
+      } catch(e){ fail(e); }
+    });
+    c.querySelectorAll("[data-delpay]").forEach(b => b.addEventListener("click", async () => {
+      if (!confirm("Delete this payment?")) return;
+      try { await sb("/rest/v1/payments?id=eq." + b.dataset.delpay, "DELETE", {}); setFlash("Payment deleted.", true); go({ name: "job", id: id }); }
+      catch(e){ fail(e); }
+    }));
+  } catch(e){ c.innerHTML = '<div class="err">' + esc(e.message) + "</div>"; }
+}
+
+/* ===== Quotes ===== */
+async function renderQuotes(c){
+  c.innerHTML = '<div class="empty"><div class="big">💲</div>Loading quotes…</div>';
+  try {
+    const [quotes, custMap] = await Promise.all([
+      sb("/rest/v1/quotes?select=*&order=sent_at.desc"),
+      loadCustomerMap()
+    ]);
+    let html = '<button class="btn" id="add-quote">+ Add quote</button>';
+    if (!quotes.length) html += '<div class="empty"><div class="big">💲</div>No quotes yet — add your first above.</div>';
+    else html += '<div class="card" style="margin-top:12px">' + quotes.map(q => {
+      const nm = (custMap[q.customer_id] && custMap[q.customer_id].name) || "";
+      const bc = q.status === "accepted" ? "green" : (q.status === "declined" ? "red" : "amber");
+      return '<div class="row-item"><div><div class="t">' + esc(q.package || "Quote") + " — " + esc(nm) + '</div>' +
+        '<div class="s">' + money(q.amount) + " · Sent " + fmtD(q.sent_at) + ' · <span class="badge ' + bc + '">' + esc(q.status || "") + "</span></div></div>" +
+        '<button class="btn small secondary" data-quote="' + q.id + '">Open</button></div>';
+    }).join("") + "</div>";
+    c.innerHTML = html;
+    document.getElementById("add-quote").addEventListener("click", () => go({ name: "add-quote" }));
+    c.querySelectorAll("[data-quote]").forEach(b => b.addEventListener("click", () => go({ name: "quote", id: b.dataset.quote })));
+  } catch(e){ c.innerHTML = '<div class="err">' + esc(e.message) + "</div>"; }
+}
+
+async function renderAddQuote(c){
+  c.innerHTML = '<div class="empty"><div class="big">💲</div>Loading…</div>';
+  try {
+    const [cs, vs] = await Promise.all([ loadCustomers(), sb("/rest/v1/vehicles?select=id,customer_id,year,make,model") ]);
+    const vehLabel = v => [v.year, v.make, v.model].filter(Boolean).join(" ");
+    c.innerHTML =
+      '<button class="back" id="bk" style="color:var(--purple);margin-bottom:8px">← Quotes</button>' +
+      '<div class="card"><h3>Add quote</h3>' +
+      '<div class="muted">Saving a quote auto-creates the 24h, 3d and 7d follow-ups.</div>' +
+      '<label class="f">Customer *</label><select id="nq-cust">' +
+        cs.map(x => '<option value="' + x.id + '">' + esc(x.name) + "</option>").join("") + "</select>" +
+      '<label class="f">Vehicle</label><select id="nq-veh"><option value="">— None —</option>' +
+        vs.map(v => '<option value="' + v.id + '">' + esc(vehLabel(v)) + "</option>").join("") + "</select>" +
+      '<label class="f">Package</label><select id="nq-pkg"><option>Standard</option><option>Deluxe</option><option>Special</option><option>Custom</option></select>' +
+      '<label class="f">Amount</label><input id="nq-amt" type="number" step="0.01" min="0" placeholder="185.00" />' +
+      '<label class="f">Notes</label><textarea id="nq-notes" rows="2"></textarea>' +
+      '<button class="btn" id="nq-save">Save quote</button></div>';
+    document.getElementById("bk").addEventListener("click", () => showTab("quotes"));
+    const PKG_PRICE = { "Standard": 125, "Deluxe": 185, "Special": 250 };
+    document.getElementById("nq-pkg").addEventListener("change", e => {
+      const p = PKG_PRICE[e.target.value];
+      if (p) document.getElementById("nq-amt").value = p.toFixed(2);
+    });
+    document.getElementById("nq-save").addEventListener("click", async () => {
+      const custId = document.getElementById("nq-cust").value;
+      if (!custId){ setFlash("Pick a customer first.", false); render(); return; }
+      const pkg = document.getElementById("nq-pkg").value;
+      const amt = document.getElementById("nq-amt").value.trim();
+      try {
+        const rows = await sb("/rest/v1/quotes", "POST", {
+          customer_id: custId,
+          vehicle_id: document.getElementById("nq-veh").value || null,
+          package: pkg,
+          amount: amt ? Number(amt) : (PKG_PRICE[pkg] || null),
+          status: "sent",
+          notes: document.getElementById("nq-notes").value.trim() || null
+        });
+        const q = rows[0];
+        const base = new Date(q.sent_at || new Date().toISOString()).getTime();
+        await sb("/rest/v1/followups", "POST", [
+          { kind: "quote", ref_id: q.id, stage: "24h", due_at: new Date(base + 24*3600*1000).toISOString(), sent: false },
+          { kind: "quote", ref_id: q.id, stage: "3d",  due_at: new Date(base + 3*24*3600*1000).toISOString(), sent: false },
+          { kind: "quote", ref_id: q.id, stage: "7d",  due_at: new Date(base + 7*24*3600*1000).toISOString(), sent: false }
+        ]);
+        setFlash("Quote saved — 24h / 3d / 7d follow-ups scheduled.", true);
+        go({ name: "quote", id: q.id });
+      } catch(e){ fail(e); }
+    });
+  } catch(e){ c.innerHTML = '<div class="err">' + esc(e.message) + "</div>"; }
+}
+
+async function renderQuoteDetail(c, id){
+  c.innerHTML = '<div class="empty"><div class="big">💲</div>Loading…</div>';
+  try {
+    const [qRows, custMap] = await Promise.all([
+      sb("/rest/v1/quotes?select=*&id=eq." + id),
+      loadCustomerMap()
+    ]);
+    const q = qRows[0];
+    if (!q){ c.innerHTML = '<div class="err">Quote not found.</div>'; return; }
+    const cust = custMap[q.customer_id] || {};
+    const bc = q.status === "accepted" ? "green" : (q.status === "declined" ? "red" : "amber");
+    c.innerHTML =
+      '<button class="back" id="bk" style="color:var(--purple);margin-bottom:8px">← Quotes</button>' +
+      '<div class="card"><h3>' + esc(q.package || "Quote") + " — " + money(q.amount) + "</h3>" +
+      '<div class="muted">Customer: <b>' + esc(cust.name || "") + "</b><br>Sent: " + fmtDT(q.sent_at) + "</div>" +
+      (q.notes ? '<div style="margin-top:8px;font-size:14px">' + esc(q.notes) + "</div>" : "") +
+      '<div style="margin-top:10px"><span class="badge ' + bc + '">' + esc(q.status || "") + "</span></div>" +
+      '<label class="f">Status</label><select id="qs">' +
+        ["sent","accepted","declined"].map(s => '<option value="' + s + '"' + (q.status === s ? " selected" : "") + ">" + s + "</option>").join("") + "</select>" +
+      '<button class="btn small danger" id="del-quote" style="margin-top:8px">Delete quote</button></div>';
+    document.getElementById("bk").addEventListener("click", () => showTab("quotes"));
+    document.getElementById("qs").addEventListener("change", async e => {
+      try { await sb("/rest/v1/quotes?id=eq." + id, "PATCH", { status: e.target.value }); setFlash("Quote marked " + e.target.value + ".", true); go({ name: "quote", id: id }); }
+      catch(err){ fail(err); }
+    });
+    document.getElementById("del-quote").addEventListener("click", async () => {
+      if (!confirm("Delete this quote and its follow-ups?")) return;
+      try {
+        await sb("/rest/v1/followups?kind=eq.quote&ref_id=eq." + id, "DELETE", {});
+        await sb("/rest/v1/quotes?id=eq." + id, "DELETE", {});
+        setFlash("Quote deleted.", true); showTab("quotes");
+      } catch(e){ fail(e); }
+    });
+  } catch(e){ c.innerHTML = '<div class="err">' + esc(e.message) + "</div>"; }
+}
+
+/* ===== Follow-ups ===== */
+async function renderFollowups(c){
+  c.innerHTML = '<div class="empty"><div class="big">⏰</div>Loading follow-ups…</div>';
+  try {
+    const fus = await sb("/rest/v1/followups?select=*&order=sent.asc,due_at.asc");
+    if (!fus.length){
+      c.innerHTML = '<div class="empty"><div class="big">⏰</div>No follow-ups scheduled.<br><span class="muted">They\'re created automatically when you save a quote.</span></div>';
+      return;
+    }
+    // resolve quotes -> customers/vehicles for context
+    const qIds = [...new Set(fus.filter(f => f.kind === "quote").map(f => f.ref_id))];
+    let qMap = {}, custMap = {}, vehMap = {};
+    if (qIds.length){
+      const qs = await sb("/rest/v1/quotes?select=id,customer_id,vehicle_id,package,amount&id=in.(" + qIds.join(",") + ")");
+      qs.forEach(q => qMap[q.id] = q);
+      custMap = await loadCustomerMap();
+      const vIds = [...new Set(qs.map(q => q.vehicle_id).filter(Boolean))];
+      if (vIds.length){
+        const vs = await sb("/rest/v1/vehicles?select=id,year,make,model&id=in.(" + vIds.join(",") + ")");
+        vs.forEach(v => vehMap[v.id] = [v.year, v.make, v.model].filter(Boolean).join(" "));
+      }
+    }
+    const now = new Date();
+    const info = f => {
+      const q = qMap[f.ref_id] || {};
+      const cust = custMap[q.customer_id] || {};
+      return {
+        name: cust.name || "",
+        phone: cust.phone || "",
+        package: q.package || "",
+        vehicle: vehMap[q.vehicle_id] || "",
+        amount: q.amount
+      };
+    };
+    const due = fus.filter(f => !f.sent && new Date(f.due_at) <= now);
+    const upcoming = fus.filter(f => !f.sent && new Date(f.due_at) > now);
+    const done = fus.filter(f => f.sent);
+    const stageBadge = s => s === "24h" ? "red" : (s === "3d" ? "amber" : (s === "7d" ? "gray" : "red"));
+    function card(f){
+      const i = info(f);
+      const tplText = fillTpl(f.stage, i);
+      let h = '<div class="card"><div class="row-item" style="border:0;padding:0 0 8px"><div>' +
+        '<div class="t"><span class="badge ' + stageBadge(f.stage) + '">' + esc(f.stage || f.kind) + "</span> " + esc(i.name || "Unknown") + "</div>" +
+        '<div class="s">' + esc(i.package || "") + (i.amount ? " · " + money(i.amount) : "") + (i.vehicle ? " · " + esc(i.vehicle) : "") + "<br>Due " + fmtDT(f.due_at) + "</div></div></div>";
+      if (!f.sent){
+        h += '<div class="tpl" id="tpl-' + f.id + '">' + esc(tplText) + "</div>";
+        h += '<div class="btn-row">';
+        if (i.phone) h += '<a class="callbtn" href="' + telHref(i.phone) + '">📞</a><a class="textbtn" href="' + smsHref(i.phone, tplText) + '">💬 Text</a>';
+        h += '<button class="btn small" data-copy="' + f.id + '">Copy</button>' +
+             '<button class="btn small secondary" data-sent="' + f.id + '">Mark sent ✓</button></div>';
+      } else {
+        h += '<div class="muted">✓ Sent ' + fmtDT(f.sent_at) + "</div>";
+      }
+      return h + "</div>";
+    }
+    let html = "";
+    html += '<div class="section-title">Due now (' + due.length + ")</div>";
+    html += due.length ? due.map(card).join("") : '<div class="card"><div class="muted">Nothing due. 🎉</div></div>';
+    html += '<div class="section-title">Upcoming (' + upcoming.length + ")</div>";
+    html += upcoming.length ? upcoming.map(card).join("") : '<div class="card"><div class="muted">Nothing upcoming.</div></div>';
+    if (done.length){
+      html += '<div class="section-title">Sent (' + done.length + ")</div>";
+      html += done.slice(0, 10).map(card).join("");
+    }
+    c.innerHTML = html;
+    c.querySelectorAll("[data-sent]").forEach(b => b.addEventListener("click", async () => {
+      try { await sb("/rest/v1/followups?id=eq." + b.dataset.sent, "PATCH", { sent: true, sent_at: new Date().toISOString() }); setFlash("Follow-up marked sent.", true); render(); }
+      catch(e){ fail(e); }
+    }));
+    c.querySelectorAll("[data-copy]").forEach(b => b.addEventListener("click", async () => {
+      const el = document.getElementById("tpl-" + b.dataset.copy);
+      try { await navigator.clipboard.writeText(el.textContent); b.textContent = "Copied ✓"; setTimeout(() => { b.textContent = "Copy"; }, 1500); }
+      catch(e){ setFlash("Copy failed — long-press the text to copy.", false); render(); }
+    }));
+  } catch(e){ c.innerHTML = '<div class="err">' + esc(e.message) + "</div>"; }
+}
+
+/* ===== Init ===== */
+render();
+</script>
+</body>
+</html>
