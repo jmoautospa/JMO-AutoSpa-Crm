@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#890BF2" />
+  <link rel="icon" href="data:," />
+  <title>Book a Detail — JMO AutoSpa</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Manrope:wght@400;500;600;700&display=swap');
+
+    :root {
+      color-scheme: light dark;
+      --bg: #f5f6f8;
+      --surface: #ffffff;
+      --surface-2: #eceef2;
+      --ink: #101116;
+      --muted: #5b606c;
+      --line: #d9dce3;
+      --purple: #890BF2;
+      --purple-2: #a83bff;
+      --purple-soft: #f1e0ff;
+      --success: #146c43;
+      --danger: #b42318;
+      --shadow: 0 18px 55px rgba(15, 9, 27, .12);
+      --radius-lg: 26px;
+      --radius-md: 16px;
+      --radius-sm: 10px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #09090d;
+        --surface: #121219;
+        --surface-2: #1b1b25;
+        --ink: #f5f4f8;
+        --muted: #b0acb9;
+        --line: #302d39;
+        --purple: #b45cff;
+        --purple-2: #cf8fff;
+        --purple-soft: #2b1540;
+        --success: #65d5a1;
+        --danger: #ff8a80;
+        --shadow: 0 18px 60px rgba(0, 0, 0, .4);
+      }
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-width: 0;
+      background:
+        linear-gradient(115deg, color-mix(in srgb, var(--purple) 8%, transparent), transparent 31rem),
+        var(--bg);
+      color: var(--ink);
+      font-family: "Manrope", sans-serif;
+      line-height: 1.5;
+    }
+    button, input, select, textarea { font: inherit; }
+    button, label { -webkit-tap-highlight-color: transparent; }
+    a { color: inherit; }
+
+    .page {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      padding: 46px 24px 72px;
+    }
+
+    .intro {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 280px;
+      gap: 40px;
+      align-items: center;
+      margin-bottom: 34px;
+    }
+    .intro.no-logo { grid-template-columns: minmax(0, 1fr); }
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--purple);
+      font-weight: 800;
+      font-size: .86rem;
+      letter-spacing: .045em;
+      text-transform: uppercase;
+    }
+    .kicker::before { content: ""; width: 30px; height: 3px; background: currentColor; border-radius: 4px; }
+    h1, h2, h3 { font-family: "Barlow Condensed", sans-serif; line-height: .98; margin: 0; }
+    h1 { font-size: clamp(3rem, 7vw, 5.5rem); max-width: 780px; letter-spacing: -.035em; margin-top: 13px; }
+    .intro p { color: var(--muted); font-size: 1.06rem; max-width: 650px; margin: 20px 0 0; }
+    .brand-mark { width: 100%; display: block; filter: drop-shadow(0 16px 28px rgba(79, 0, 140, .25)); }
+
+    .booking-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 330px;
+      gap: 24px;
+      align-items: start;
+    }
+    .form-shell {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .section { padding: 32px; border-bottom: 1px solid var(--line); }
+    .section:last-child { border-bottom: 0; }
+    .section-heading { display: flex; gap: 15px; align-items: flex-start; margin-bottom: 22px; }
+    .step {
+      flex: 0 0 34px; height: 34px; border-radius: 50%;
+      display: grid; place-items: center; background: var(--ink); color: var(--surface);
+      font-family: "Barlow Condensed", sans-serif; font-weight: 800; font-size: 1.1rem;
+    }
+    .section-heading h2 { font-size: 2rem; letter-spacing: -.015em; }
+    .section-heading p { margin: 5px 0 0; color: var(--muted); font-size: .9rem; }
+
+    .package-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .choice { position: relative; }
+    .choice input {
+      position: absolute; top: 14px; right: 14px; z-index: 2;
+      width: 18px; height: 18px; margin: 0; accent-color: var(--purple); cursor: pointer;
+    }
+    .package-card {
+      min-height: 158px;
+      display: flex; flex-direction: column;
+      border: 1px solid var(--line); border-radius: var(--radius-md);
+      padding: 20px 18px; cursor: pointer; background: var(--surface);
+      transition: border-color .18s ease, background .18s ease, transform .18s ease;
+    }
+    .package-card:hover { border-color: var(--purple); transform: translateY(-2px); }
+    .package-card strong { font-family: "Barlow Condensed", sans-serif; font-size: 1.55rem; line-height: 1; }
+    .package-card span { color: var(--muted); font-size: .82rem; margin-top: 9px; }
+    .package-card b { margin-top: auto; font-size: .95rem; padding-top: 16px; }
+    .choice input:checked + .package-card { background: var(--purple-soft); border-color: var(--purple); box-shadow: inset 0 0 0 1px var(--purple); }
+    .choice input:focus-visible + .package-card { outline: 3px solid color-mix(in srgb, var(--purple) 35%, transparent); outline-offset: 3px; }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .field { display: grid; gap: 7px; }
+    .field.full { grid-column: 1 / -1; }
+    .field label, .field-label { font-weight: 700; font-size: .84rem; }
+    .required { color: var(--purple); }
+    input, select, textarea {
+      width: 100%; min-width: 0; border: 1px solid var(--line); border-radius: var(--radius-sm);
+      background: var(--bg); color: var(--ink); padding: 13px 14px; outline: none;
+    }
+    textarea { min-height: 92px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { border-color: var(--purple); box-shadow: 0 0 0 3px color-mix(in srgb, var(--purple) 18%, transparent); }
+    input::placeholder, textarea::placeholder { color: color-mix(in srgb, var(--muted) 72%, transparent); }
+
+    .daypart { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+    .daypart-choice { position: relative; min-width: 0; }
+    .daypart label {
+      display: block; text-align: center; padding: 12px 8px 12px 27px; cursor: pointer;
+      border: 1px solid var(--line); border-radius: var(--radius-sm); color: var(--muted); font-weight: 700; font-size: .84rem;
+    }
+    .daypart input { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; margin: 0; z-index: 2; accent-color: var(--purple); cursor: pointer; }
+    .daypart input:checked + label { border-color: var(--purple); background: var(--purple-soft); color: var(--ink); }
+    .daypart input:focus-visible + label { outline: 3px solid color-mix(in srgb, var(--purple) 35%, transparent); }
+
+    .summary {
+      position: sticky; top: 20px; background: #0d0c12; color: #fff;
+      border-radius: var(--radius-lg); padding: 27px; overflow: hidden;
+      box-shadow: 0 20px 55px rgba(27, 0, 49, .28);
+    }
+    .summary::after {
+      content: ""; position: absolute; width: 230px; height: 230px; border-radius: 50%;
+      background: rgba(137, 11, 242, .2); right: -110px; top: -105px; pointer-events: none;
+    }
+    .summary h2 { font-size: 2rem; position: relative; z-index: 1; }
+    .summary-note { margin: 8px 0 25px; color: #bbb7c4; font-size: .84rem; position: relative; z-index: 1; }
+    .summary-list { margin: 0; display: grid; gap: 15px; }
+    .summary-row { display: flex; justify-content: space-between; gap: 14px; align-items: baseline; }
+    .summary-row dt { color: #aaa6b3; font-size: .83rem; }
+    .summary-row dd { margin: 0; font-weight: 700; text-align: right; }
+    .price-row { border-top: 1px solid #302d38; padding-top: 18px; margin-top: 4px; }
+    .price-row dt { color: #fff; font-weight: 700; }
+    .price-row dd { font-family: "Barlow Condensed", sans-serif; font-size: 1.75rem; color: #ca82ff; }
+    .send-button {
+      width: 100%; border: 0; cursor: pointer; border-radius: 12px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      margin-top: 24px; background: var(--purple-2); color: white; padding: 15px 16px;
+    }
+    .send-button:hover:not(:disabled) { background: #bf5dff; }
+    .send-button:disabled { opacity: .6; cursor: wait; }
+    .send-button:focus-visible { outline: 3px solid white; outline-offset: 3px; }
+    .send-button svg { width: 18px; height: 18px; flex: 0 0 auto; }
+    .fine-print { margin: 15px 0 0; font-size: .73rem; line-height: 1.45; color: #918c9c; }
+    .status { min-height: 22px; margin: 11px 0 0; color: #d9a7ff; font-size: .8rem; font-weight: 700; text-align: center; }
+    .status.error { color: #ff9d94; }
+
+    .confirmation {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 48px 32px;
+      text-align: center;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+    .check {
+      width: 76px; height: 76px; border-radius: 50%;
+      background: var(--purple-soft); color: var(--purple);
+      display: grid; place-items: center; margin: 0 auto 20px;
+    }
+    .check svg { width: 38px; height: 38px; }
+    .confirmation h2 { font-size: 2.6rem; margin-bottom: 10px; }
+    .confirmation p { color: var(--muted); margin: 0 0 8px; }
+    .confirmation .conf-list {
+      margin: 22px auto; max-width: 380px; text-align: left;
+      border: 1px solid var(--line); border-radius: var(--radius-md); padding: 18px 20px;
+      display: grid; gap: 10px;
+    }
+    .confirmation .conf-list div { display: flex; justify-content: space-between; gap: 14px; }
+    .confirmation .conf-list dt { color: var(--muted); font-size: .83rem; }
+    .confirmation .conf-list dd { margin: 0; font-weight: 700; text-align: right; }
+
+    .contact-strip {
+      margin-top: 28px; display: flex; align-items: center; justify-content: space-between; gap: 18px;
+      color: var(--muted); font-size: .86rem; padding: 0 7px;
+    }
+    .contact-strip a { color: var(--ink); font-weight: 800; text-decoration-color: var(--purple); text-underline-offset: 3px; }
+    .contact-strip p { margin: 0; }
+
+    @media (max-width: 860px) {
+      .page { padding-top: 30px; }
+      .intro { grid-template-columns: minmax(0, 1fr) 180px; gap: 18px; }
+      .intro.no-logo { grid-template-columns: minmax(0, 1fr); }
+      .booking-layout { grid-template-columns: 1fr; }
+      .summary { position: static; }
+    }
+    @media (max-width: 620px) {
+      .page { padding: 22px 14px 40px; }
+      .intro { display: block; margin-bottom: 25px; }
+      .brand-mark { width: 138px; margin: 21px 0 0; }
+      h1 { font-size: clamp(3rem, 15vw, 4.4rem); }
+      .intro p { font-size: .95rem; margin-top: 15px; }
+      .section { padding: 25px 18px; }
+      .package-grid { grid-template-columns: 1fr; }
+      .package-card {
+        min-height: auto;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: start;
+        gap: 6px 12px;
+        padding: 17px 44px 17px 17px;
+      }
+      .package-card strong { min-width: 0; }
+      .package-card span { grid-column: 1 / -1; margin: 0; }
+      .package-card b {
+        grid-column: 1 / -1;
+        width: 100%;
+        margin: 7px 0 0;
+        padding-top: 10px;
+        border-top: 1px solid var(--line);
+        white-space: nowrap;
+      }
+      .form-grid { grid-template-columns: 1fr; }
+      .field.full { grid-column: auto; }
+      .summary { padding: 24px 20px; }
+      .contact-strip { align-items: flex-start; flex-direction: column; padding: 0 3px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="intro" id="intro" aria-labelledby="page-title">
+      <div>
+        <div class="kicker">Central Florida mobile detailing</div>
+        <h1 id="page-title">Book your detail in under a minute.</h1>
+        <p>Choose a package, tell us about your vehicle, and pick a preferred date. JMO AutoSpa will text you shortly to confirm availability and your final quote.</p>
+      </div>
+      <img class="brand-mark" src="assets/jmo-logo.png" alt="JMO AutoSpa, number one detailer in Central Florida" onerror="this.style.display='none';document.getElementById('intro').classList.add('no-logo');" />
+    </section>
+
+    <div id="booking-area">
+      <form id="booking-form" novalidate>
+        <div class="booking-layout">
+          <div class="form-shell">
+            <section class="section" aria-labelledby="package-title">
+              <div class="section-heading">
+                <span class="step" aria-hidden="true">1</span>
+                <div><h2 id="package-title">Choose your package</h2><p>Prices shown are starting prices. Final pricing depends on vehicle size and condition.</p></div>
+              </div>
+              <div class="package-grid">
+                <label class="choice">
+                  <input type="radio" name="package" value="Standard" data-price="125" checked />
+                  <span class="package-card"><strong>Standard</strong><span>A clean reset for regular upkeep</span><b>From $125</b></span>
+                </label>
+                <label class="choice">
+                  <input type="radio" name="package" value="Deluxe" data-price="185" />
+                  <span class="package-card"><strong>Deluxe</strong><span>For a more thorough refresh</span><b>From $185</b></span>
+                </label>
+                <label class="choice">
+                  <input type="radio" name="package" value="Special" data-price="250" />
+                  <span class="package-card"><strong>Special</strong><span>The most complete detail option</span><b>From $250</b></span>
+                </label>
+              </div>
+            </section>
+
+            <section class="section" aria-labelledby="vehicle-title">
+              <div class="section-heading">
+                <span class="step" aria-hidden="true">2</span>
+                <div><h2 id="vehicle-title">Tell us about the vehicle</h2><p>This helps us prepare an accurate quote.</p></div>
+              </div>
+              <div class="form-grid">
+                <div class="field">
+                  <label for="vehicle">Year, make &amp; model <span class="required">*</span></label>
+                  <input id="vehicle" name="vehicle" autocomplete="off" placeholder="2021 Toyota Camry" required />
+                </div>
+                <div class="field">
+                  <label for="size">Vehicle type <span class="required">*</span></label>
+                  <select id="size" name="size" required>
+                    <option value="">Select one</option>
+                    <option>Sedan / coupe</option>
+                    <option>Small SUV / crossover</option>
+                    <option>Large SUV / 3-row</option>
+                    <option>Pickup truck</option>
+                    <option>Van</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+                <div class="field full">
+                  <label for="extras">Anything extra you want quoted?</label>
+                  <input id="extras" name="extras" placeholder="Pet hair, stains, odor, headlights, or another concern" />
+                </div>
+                <div class="field full">
+                  <label for="condition">Condition notes</label>
+                  <textarea id="condition" name="condition" placeholder="Tell us what needs the most attention."></textarea>
+                </div>
+              </div>
+            </section>
+
+            <section class="section" aria-labelledby="schedule-title">
+              <div class="section-heading">
+                <span class="step" aria-hidden="true">3</span>
+                <div><h2 id="schedule-title">Pick a preferred time</h2><p>This is a request; JMO AutoSpa will confirm the appointment by text.</p></div>
+              </div>
+              <div class="form-grid">
+                <div class="field">
+                  <label for="date">Preferred date <span class="required">*</span></label>
+                  <input id="date" name="date" type="date" required />
+                </div>
+                <div class="field">
+                  <span class="field-label">Best time <span class="required">*</span></span>
+                  <div class="daypart" role="radiogroup" aria-label="Preferred time">
+                    <div class="daypart-choice"><input id="morning" type="radio" name="time" value="Morning" checked /><label for="morning">Morning</label></div>
+                    <div class="daypart-choice"><input id="afternoon" type="radio" name="time" value="Afternoon" /><label for="afternoon">Afternoon</label></div>
+                    <div class="daypart-choice"><input id="flexible" type="radio" name="time" value="Flexible" /><label for="flexible">Flexible</label></div>
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="name">Your name <span class="required">*</span></label>
+                  <input id="name" name="name" autocomplete="name" placeholder="Full name" required />
+                </div>
+                <div class="field">
+                  <label for="phone">Phone <span class="required">*</span></label>
+                  <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(352) 555-0123" required />
+                </div>
+                <div class="field full">
+                  <label for="zip">Service ZIP code <span class="required">*</span></label>
+                  <input id="zip" name="zip" inputmode="numeric" autocomplete="postal-code" maxlength="5" pattern="[0-9]{5}" placeholder="34471" required />
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <aside class="summary" aria-labelledby="summary-title">
+            <h2 id="summary-title">Your request</h2>
+            <p class="summary-note">Review the basics, then request your booking below.</p>
+            <dl class="summary-list">
+              <div class="summary-row"><dt>Package</dt><dd id="summary-package">Standard</dd></div>
+              <div class="summary-row"><dt>Vehicle</dt><dd id="summary-vehicle">Not added</dd></div>
+              <div class="summary-row"><dt>Preferred date</dt><dd id="summary-date">Not selected</dd></div>
+              <div class="summary-row price-row"><dt>Starting at</dt><dd id="summary-price">$125</dd></div>
+            </dl>
+            <button class="send-button" id="submit-button" type="submit">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg>
+              <span id="submit-label">Request booking</span>
+            </button>
+            <div class="status" id="status" role="status" aria-live="polite"></div>
+            <p class="fine-print">Your appointment is not confirmed until JMO AutoSpa replies. The starting price does not include unquoted extras or vehicle-specific adjustments.</p>
+          </aside>
+        </div>
+      </form>
+    </div>
+
+    <footer class="contact-strip">
+      <p>Serving Ocala and Central Florida</p>
+      <p>Questions? <a href="sms:+13522392677" target="_top">Text 352-239-2677</a></p>
+      <p><a href="https://www.instagram.com/jmoautospa/" target="_blank" rel="noopener">@jmoautospa on Instagram</a></p>
+    </footer>
+  </main>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var SB_URL = 'https://erygpzhraixwzgzacvyb.supabase.co';
+      var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVyeWdwemhyYWl4d3pnemFjdnliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3Nzc3OTcsImV4cCI6MjEwNjM1Mzc5N30.0o1ELCn-W0AtVy5bLycBu1Uvf5eycj7JjhslvOXdV6w';
+
+      var form = document.getElementById('booking-form');
+      var bookingArea = document.getElementById('booking-area');
+      var dateInput = document.getElementById('date');
+      var vehicleInput = document.getElementById('vehicle');
+      var status = document.getElementById('status');
+      var submitButton = document.getElementById('submit-button');
+      var submitLabel = document.getElementById('submit-label');
+
+      var localToday = new Date();
+      var yyyy = localToday.getFullYear();
+      var mm = String(localToday.getMonth() + 1).padStart(2, '0');
+      var dd = String(localToday.getDate()).padStart(2, '0');
+      dateInput.min = yyyy + '-' + mm + '-' + dd;
+
+      function esc(s) {
+        return String(s == null ? '' : s)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function selected(name) {
+        return form.querySelector('input[name="' + name + '"]:checked');
+      }
+
+      function formatDate(value) {
+        if (!value) return 'Not selected';
+        var parts = value.split('-');
+        var date = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+        return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(date);
+      }
+
+      function updateSummary() {
+        var pkg = selected('package');
+        document.getElementById('summary-package').textContent = pkg.value;
+        document.getElementById('summary-price').textContent = '$' + pkg.dataset.price;
+        document.getElementById('summary-vehicle').textContent = vehicleInput.value.trim() || 'Not added';
+        document.getElementById('summary-date').textContent = formatDate(dateInput.value);
+      }
+
+      // Compute the America/New_York numeric UTC offset (e.g. "-04:00") in effect
+      // at the given local date/time, DST-aware. Never hardcoded.
+      function nyOffsetString(year, month, day, hour) {
+        var probe = new Date(year, month - 1, day, hour, 0, 0);
+        var asUTC = new Date(probe.toLocaleString('en-US', { timeZone: 'UTC' }));
+        var asNY = new Date(probe.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+        var diffMin = Math.round((asNY - asUTC) / 60000);
+        var sign = diffMin <= 0 ? '-' : '+';
+        var abs = Math.abs(diffMin);
+        return sign + String(Math.floor(abs / 60)).padStart(2, '0') + ':' + String(abs % 60).padStart(2, '0');
+      }
+
+      function scheduledAtISO(dateStr, daypart) {
+        var hours = { Morning: 9, Afternoon: 13, Flexible: 10 };
+        var hour = hours[daypart] || 10;
+        var y = Number(dateStr.slice(0, 4));
+        var mo = Number(dateStr.slice(5, 7));
+        var d = Number(dateStr.slice(8, 10));
+        var hh = String(hour).padStart(2, '0');
+        return dateStr + 'T' + hh + ':00:00' + nyOffsetString(y, mo, d, hour);
+      }
+
+      function rest(path, body) {
+        return fetch(SB_URL + '/rest/v1/' + path, {
+          method: 'POST',
+          headers: {
+            'apikey': ANON_KEY,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+          },
+          body: JSON.stringify(body)
+        }).then(function (res) {
+          if (!res.ok) {
+            return res.text().then(function (t) {
+              throw new Error('Request failed (' + res.status + '): ' + t.slice(0, 200));
+            });
+          }
+          return res.json();
+        });
+      }
+
+      function showConfirmation(data) {
+        bookingArea.innerHTML =
+          '<div class="confirmation" role="status">' +
+            '<div class="check" aria-hidden="true">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>' +
+            '</div>' +
+            '<h2>Request received!</h2>' +
+            '<p><strong>' + esc(data.name) + '</strong>, JMO AutoSpa will text you shortly to confirm.</p>' +
+            '<dl class="conf-list">' +
+              '<div><dt>Package</dt><dd>' + esc(data.pkg) + ' (from $' + esc(data.price) + ')</dd></div>' +
+              '<div><dt>Vehicle</dt><dd>' + esc(data.vehicle) + '</dd></div>' +
+              '<div><dt>Preferred date</dt><dd>' + esc(data.dateLabel) + ' · ' + esc(data.daypart) + '</dd></div>' +
+            '</dl>' +
+            '<p>Questions? <a href="sms:+13522392677">Text 352-239-2677</a>.</p>' +
+          '</div>';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function setSubmitting(on) {
+        submitButton.disabled = on;
+        submitLabel.textContent = on ? 'Sending…' : 'Request booking';
+      }
+
+      form.addEventListener('input', updateSummary);
+      form.addEventListener('change', updateSummary);
+
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        status.textContent = '';
+        status.classList.remove('error');
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          status.textContent = 'Complete the required fields first.';
+          status.classList.add('error');
+          return;
+        }
+
+        var pkg = selected('package');
+        var daypart = selected('time').value;
+        var name = document.getElementById('name').value.trim();
+        var phone = document.getElementById('phone').value.trim();
+        var vehicle = vehicleInput.value.trim();
+        var vtype = document.getElementById('size').value;
+        var extras = document.getElementById('extras').value.trim();
+        var condition = document.getElementById('condition').value.trim();
+        var zip = document.getElementById('zip').value.trim();
+        var dateStr = dateInput.value;
+        var price = Number(pkg.dataset.price);
+
+        var customerNotes = 'Vehicle: ' + vehicle + ' (' + vtype + ') | ZIP: ' + zip;
+        if (condition) customerNotes += '\nCondition: ' + condition;
+
+        var jobNoteLines = [];
+        if (extras) jobNoteLines.push('Extras to quote: ' + extras);
+        if (condition) jobNoteLines.push('Condition notes: ' + condition);
+        jobNoteLines.push('Preferred time: ' + daypart);
+
+        setSubmitting(true);
+
+        rest('customers', { name: name, phone: phone, notes: customerNotes })
+          .then(function (rows) {
+            var customerId = rows && rows[0] && rows[0].id;
+            if (!customerId) throw new Error('Could not create customer record.');
+            return rest('jobs', {
+              customer_id: customerId,
+              title: pkg.value + ' detail',
+              scheduled_at: scheduledAtISO(dateStr, daypart),
+              price: price,
+              paid: false,
+              status: 'scheduled',
+              notes: jobNoteLines.join('\n')
+            });
+          })
+          .then(function () {
+            showConfirmation({
+              name: name,
+              pkg: pkg.value,
+              price: pkg.dataset.price,
+              vehicle: vehicle,
+              dateLabel: formatDate(dateStr),
+              daypart: daypart
+            });
+          })
+          .catch(function (err) {
+            status.textContent = 'Something went wrong sending your request. Please try again or text 352-239-2677. (' + err.message.slice(0, 120) + ')';
+            status.classList.add('error');
+            setSubmitting(false);
+          });
+      });
+
+      updateSummary();
+    })();
+  </script>
+</body>
+</html>
