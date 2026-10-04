@@ -469,15 +469,14 @@
         return dateStr + 'T' + hh + ':00:00' + nyOffsetString(y, mo, d, hour);
       }
 
-      function rest(path, body) {
-        return fetch(SB_URL + '/rest/v1/' + path, {
+      function rpcCreateBooking(args) {
+        return fetch(SB_URL + '/rest/v1/rpc/create_booking', {
           method: 'POST',
           headers: {
             'apikey': ANON_KEY,
-            'Content-Type': 'application/json',
-            'Prefer': 'return=representation'
+            'Content-Type': 'application/json'
           },
-          body: JSON.stringify(body)
+          body: JSON.stringify(args)
         }).then(function (res) {
           if (!res.ok) {
             return res.text().then(function (t) {
@@ -547,20 +546,15 @@
 
         setSubmitting(true);
 
-        rest('customers', { name: name, phone: phone, notes: customerNotes })
-          .then(function (rows) {
-            var customerId = rows && rows[0] && rows[0].id;
-            if (!customerId) throw new Error('Could not create customer record.');
-            return rest('jobs', {
-              customer_id: customerId,
-              title: pkg.value + ' detail',
-              scheduled_at: scheduledAtISO(dateStr, daypart),
-              price: price,
-              paid: false,
-              status: 'scheduled',
-              notes: jobNoteLines.join('\n')
-            });
-          })
+        rpcCreateBooking({
+          p_name: name,
+          p_phone: phone,
+          p_customer_notes: customerNotes,
+          p_job_title: pkg.value + ' detail',
+          p_scheduled_at: scheduledAtISO(dateStr, daypart),
+          p_price: price,
+          p_job_notes: jobNoteLines.join('\n')
+        })
           .then(function () {
             showConfirmation({
               name: name,
