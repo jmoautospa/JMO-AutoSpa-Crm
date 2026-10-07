@@ -402,9 +402,6 @@
     (function () {
       'use strict';
 
-      var SB_URL = 'https://erygpzhraixwzgzacvyb.supabase.co';
-      var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVyeWdwemhyYWl4d3pnemFjdnliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3Nzc3OTcsImV4cCI6MjEwNjM1Mzc5N30.0o1ELCn-W0AtVy5bLycBu1Uvf5eycj7JjhslvOXdV6w';
-
       var form = document.getElementById('booking-form');
       var bookingArea = document.getElementById('booking-area');
       var dateInput = document.getElementById('date');
@@ -469,37 +466,20 @@
         return dateStr + 'T' + hh + ':00:00' + nyOffsetString(y, mo, d, hour);
       }
 
-      function rpcCreateBooking(args) {
-        return fetch(SB_URL + '/rest/v1/rpc/create_booking', {
-          method: 'POST',
-          headers: {
-            'apikey': ANON_KEY,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(args)
-        }).then(function (res) {
-          if (!res.ok) {
-            return res.text().then(function (t) {
-              throw new Error('Request failed (' + res.status + '): ' + t.slice(0, 200));
-            });
-          }
-          return res.json();
-        });
-      }
-
-      function showConfirmation(data) {
+      function showSmsConfirmation(data) {
         bookingArea.innerHTML =
           '<div class="confirmation" role="status">' +
             '<div class="check" aria-hidden="true">' +
               '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>' +
             '</div>' +
-            '<h2>Request received!</h2>' +
-            '<p><strong>' + esc(data.name) + '</strong>, JMO AutoSpa will text you shortly to confirm.</p>' +
+            '<h2>Almost done!</h2>' +
+            '<p><strong>' + esc(data.name) + '</strong>, tap below to send your booking request by text.</p>' +
             '<dl class="conf-list">' +
               '<div><dt>Package</dt><dd>' + esc(data.pkg) + ' (from $' + esc(data.price) + ')</dd></div>' +
               '<div><dt>Vehicle</dt><dd>' + esc(data.vehicle) + '</dd></div>' +
               '<div><dt>Preferred date</dt><dd>' + esc(data.dateLabel) + ' · ' + esc(data.daypart) + '</dd></div>' +
             '</dl>' +
+            '<p><a class="send-button" style="text-decoration:none;" href="' + data.smsHref + '">Send booking by text</a></p>' +
             '<p>Questions? <a href="sms:+13522392677">Text 352-239-2677</a>.</p>' +
           '</div>';
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -534,44 +514,28 @@
         var condition = document.getElementById('condition').value.trim();
         var zip = document.getElementById('zip').value.trim();
         var dateStr = dateInput.value;
-        var price = Number(pkg.dataset.price);
 
-        var customerNotes = 'Vehicle: ' + vehicle + ' (' + vtype + ') | ZIP: ' + zip;
-        if (condition) customerNotes += '\nCondition: ' + condition;
+        var smsLines = [
+          'New booking request — JMO AutoSpa',
+          'Name: ' + name,
+          'Phone: ' + phone,
+          'Package: ' + pkg.value + ' detail (from $' + pkg.dataset.price + ')',
+          'Vehicle: ' + vehicle + ' (' + vtype + ')',
+          'Preferred: ' + formatDate(dateStr) + ' · ' + daypart,
+          'ZIP: ' + zip
+        ];
+        if (condition) smsLines.push('Condition: ' + condition);
+        if (extras) smsLines.push('Extras to quote: ' + extras);
 
-        var jobNoteLines = [];
-        if (extras) jobNoteLines.push('Extras to quote: ' + extras);
-        if (condition) jobNoteLines.push('Condition notes: ' + condition);
-        jobNoteLines.push('Preferred time: ' + daypart);
-
-        setSubmitting(true);
-
-        rpcCreateBooking({
-          p_name: name,
-          p_phone: phone,
-          p_customer_notes: customerNotes,
-          p_vehicle: vehicle,
-          p_vehicle_type: vtype,
-          p_job_title: pkg.value + ' detail',
-          p_scheduled_at: scheduledAtISO(dateStr, daypart),
-          p_price: price,
-          p_job_notes: jobNoteLines.join('\n')
-        })
-          .then(function () {
-            showConfirmation({
-              name: name,
-              pkg: pkg.value,
-              price: pkg.dataset.price,
-              vehicle: vehicle,
-              dateLabel: formatDate(dateStr),
-              daypart: daypart
-            });
-          })
-          .catch(function (err) {
-            status.textContent = 'Something went wrong sending your request. Please try again or text 352-239-2677. (' + err.message.slice(0, 120) + ')';
-            status.classList.add('error');
-            setSubmitting(false);
-          });
+        showSmsConfirmation({
+          name: name,
+          pkg: pkg.value,
+          price: pkg.dataset.price,
+          vehicle: vehicle,
+          dateLabel: formatDate(dateStr),
+          daypart: daypart,
+          smsHref: 'sms:+13522392677?body=' + encodeURIComponent(smsLines.join('\n'))
+        });
       });
 
       updateSummary();
