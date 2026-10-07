@@ -133,6 +133,11 @@
     .package-card strong { font-family: "Barlow Condensed", sans-serif; font-size: 1.55rem; line-height: 1; }
     .package-card span { color: var(--muted); font-size: .82rem; margin-top: 9px; }
     .package-card b { margin-top: auto; font-size: .95rem; padding-top: 16px; }
+    .pkg-features { list-style: none; margin: 14px 0 0; padding: 0; text-align: left; width: 100%; }
+    .pkg-features li { position: relative; padding: 5px 0 5px 22px; font-size: .83rem; color: var(--muted); line-height: 1.4; }
+    .pkg-features li::before { content: "✓"; position: absolute; left: 0; color: var(--purple-2); font-weight: 800; }
+    .pkg-features li.tier-plus { color: var(--ink); font-weight: 700; }
+    .pkg-features li.tier-plus::before { content: "+"; }
     .choice input:checked + .package-card { background: var(--purple-soft); border-color: var(--purple); box-shadow: inset 0 0 0 1px var(--purple); }
     .choice input:focus-visible + .package-card { outline: 3px solid color-mix(in srgb, var(--purple) 35%, transparent); outline-offset: 3px; }
 
@@ -291,15 +296,15 @@
               <div class="package-grid">
                 <label class="choice">
                   <input type="radio" name="package" value="Standard" data-price="125" checked />
-                  <span class="package-card"><strong>Standard</strong><span>A clean reset for regular upkeep</span><b>From $125</b></span>
+                  <span class="package-card"><strong>Standard</strong><span>A clean reset for regular upkeep</span><ul class="pkg-features"><li>Thorough exterior hand wash</li><li>Tire &amp; rim cleaning with dressing</li><li>Bug removal &amp; streak-free windows</li><li>Complete dirt and grime removal</li><li>Full interior wipe-down of all surfaces</li><li>Interior window cleaning &amp; complete vacuum</li></ul><b>From $125</b></span>
                 </label>
                 <label class="choice">
                   <input type="radio" name="package" value="Deluxe" data-price="185" />
-                  <span class="package-card"><strong>Deluxe</strong><span>For a more thorough refresh</span><b>From $185</b></span>
+                  <span class="package-card"><strong>Deluxe</strong><span>For a more thorough refresh</span><ul class="pkg-features"><li class="tier-plus">Everything in Standard, plus:</li><li>Seat &amp; carpet shampooing as needed</li><li>Deep tire cleaning &amp; gas cap detailing</li><li>Spray-on wax protection</li><li>Complete top-to-bottom interior refresh</li></ul><b>From $185</b></span>
                 </label>
                 <label class="choice">
                   <input type="radio" name="package" value="Special" data-price="250" />
-                  <span class="package-card"><strong>Special</strong><span>The most complete detail option</span><b>From $250</b></span>
+                  <span class="package-card"><strong>Special</strong><span>The most complete detail option</span><ul class="pkg-features"><li class="tier-plus">Everything in Deluxe, plus:</li><li>Full interior steam cleaning</li><li>Carpet shampooing</li><li>Odor elimination treatment</li><li>Engine bay detailing</li><li>Protective spray-on wax for lasting shine</li></ul><b>From $250</b></span>
                 </label>
               </div>
             </section>
