@@ -139,6 +139,14 @@
     .pkg-features li.tier-plus { color: var(--ink); font-weight: 700; }
     .pkg-features li.tier-plus::before { content: "+"; }
     .package-card .pop-badge { align-self: center; background: var(--purple); color: #fff; font-size: .68rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; padding: 5px 14px; border-radius: 999px; margin: 0 0 10px; }
+    .addon-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 4px; }
+    .addon-card { display: flex; align-items: center; gap: 10px; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; cursor: pointer; background: var(--surface); transition: border-color .15s ease, background .15s ease; }
+    .addon-card input { width: 18px; height: 18px; accent-color: var(--purple); flex: 0 0 auto; margin: 0; }
+    .addon-card .addon-name { flex: 1; font-weight: 600; font-size: .88rem; }
+    .addon-card .addon-name small { color: var(--muted); font-weight: 500; }
+    .addon-card .addon-price { font-weight: 800; color: var(--purple-2); font-size: .9rem; white-space: nowrap; }
+    .addon-card:has(input:checked) { border-color: var(--purple); background: var(--purple-soft); }
+    @media (max-width: 860px) { .addon-grid { grid-template-columns: 1fr; } }
     .choice input:checked + .package-card { background: var(--purple-soft); border-color: var(--purple); box-shadow: inset 0 0 0 1px var(--purple); }
     .choice input:focus-visible + .package-card { outline: 3px solid color-mix(in srgb, var(--purple) 35%, transparent); outline-offset: 3px; }
 
@@ -305,14 +313,29 @@
                 </label>
                 <label class="choice">
                   <input type="radio" name="package" value="Special" data-price="250" />
-                  <span class="package-card"><strong>Special</strong><span>The most complete detail option</span><ul class="pkg-features"><li class="tier-plus">Everything in Deluxe, plus:</li><li>Full interior steam cleaning</li><li>Odor elimination treatment</li><li>Engine bay detailing</li><li>Clay bar treatment</li><li>Spray-on sealant</li><li>Protective spray-on wax for lasting shine</li></ul><b>From $250</b></span>
+                  <span class="package-card"><strong>Special</strong><span>The most complete detail option</span><ul class="pkg-features"><li class="tier-plus">Everything in Deluxe, plus:</li><li>Full interior steam cleaning</li><li>Odor elimination treatment</li><li>Engine bay detailing</li><li>Clay bar treatment</li><li>Protective spray-on wax for lasting shine</li></ul><b>From $250</b></span>
                 </label>
+              </div>
+            </section>
+
+            <section class="section" aria-labelledby="addon-title">
+              <div class="section-heading">
+                <span class="step" aria-hidden="true">2</span>
+                <div><h2 id="addon-title">Add-on services</h2><p>Optional extras — priced up front, added to any package.</p></div>
+              </div>
+              <div class="addon-grid">
+                <label class="addon-card"><input type="checkbox" name="addon" value="Pet Hair Removal" data-price="55" /><span class="addon-name">Pet Hair Removal</span><span class="addon-price">$55</span></label>
+                <label class="addon-card"><input type="checkbox" name="addon" value="Headlight Restoration" data-price="75" /><span class="addon-name">Headlight Restoration <small>(pair)</small></span><span class="addon-price">$75</span></label>
+                <label class="addon-card"><input type="checkbox" name="addon" value="Seat Shampooing" data-price="50" /><span class="addon-name">Seat Shampooing</span><span class="addon-price">$50</span></label>
+                <label class="addon-card"><input type="checkbox" name="addon" value="Odor Neutralizing Treatment" data-price="65" /><span class="addon-name">Odor Neutralizing Treatment</span><span class="addon-price">$65</span></label>
+                <label class="addon-card"><input type="checkbox" name="addon" value="Leather Deep Clean & Condition" data-price="60" /><span class="addon-name">Leather Deep Clean &amp; Condition</span><span class="addon-price">$60</span></label>
+                <label class="addon-card"><input type="checkbox" name="addon" value="Engine Bay Detail" data-price="60" /><span class="addon-name">Engine Bay Detail</span><span class="addon-price">$60</span></label>
               </div>
             </section>
 
             <section class="section" aria-labelledby="vehicle-title">
               <div class="section-heading">
-                <span class="step" aria-hidden="true">2</span>
+                <span class="step" aria-hidden="true">3</span>
                 <div><h2 id="vehicle-title">Tell us about the vehicle</h2><p>This helps us prepare an accurate quote.</p></div>
               </div>
               <div class="form-grid">
@@ -345,7 +368,7 @@
 
             <section class="section" aria-labelledby="schedule-title">
               <div class="section-heading">
-                <span class="step" aria-hidden="true">3</span>
+                <span class="step" aria-hidden="true">4</span>
                 <div><h2 id="schedule-title">Pick a preferred time</h2><p>This is a request; JMO AutoSpa will confirm the appointment by text.</p></div>
               </div>
               <div class="form-grid">
@@ -384,6 +407,7 @@
               <div class="summary-row"><dt>Package</dt><dd id="summary-package">Standard</dd></div>
               <div class="summary-row"><dt>Vehicle</dt><dd id="summary-vehicle">Not added</dd></div>
               <div class="summary-row"><dt>Preferred date</dt><dd id="summary-date">Not selected</dd></div>
+              <div class="summary-row"><dt>Add-ons</dt><dd id="summary-addons">None</dd></div>
               <div class="summary-row price-row"><dt>Starting at</dt><dd id="summary-price">$125</dd></div>
             </dl>
             <button class="send-button" id="submit-button" type="submit">
@@ -448,6 +472,9 @@
         document.getElementById('summary-price').textContent = '$' + pkg.dataset.price;
         document.getElementById('summary-vehicle').textContent = vehicleInput.value.trim() || 'Not added';
         document.getElementById('summary-date').textContent = formatDate(dateInput.value);
+        var addonNames = [];
+        document.querySelectorAll('input[name="addon"]:checked').forEach(function (cb) { addonNames.push(cb.value); });
+        document.getElementById('summary-addons').textContent = addonNames.length ? addonNames.join(', ') : 'None';
       }
 
       // Compute the America/New_York numeric UTC offset (e.g. "-04:00") in effect
@@ -530,6 +557,11 @@
           'Preferred: ' + formatDate(dateStr) + ' · ' + daypart,
           'ZIP: ' + zip
         ];
+        var addons = [];
+        document.querySelectorAll('input[name="addon"]:checked').forEach(function (cb) {
+          addons.push(cb.value + ' ($' + cb.dataset.price + ')');
+        });
+        if (addons.length) smsLines.push('Add-ons: ' + addons.join(', '));
         if (condition) smsLines.push('Condition: ' + condition);
         if (extras) smsLines.push('Extras to quote: ' + extras);
 
